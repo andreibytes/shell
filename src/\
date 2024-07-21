@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <pwd.h>
+#include <string.h>
+#include "shell_builtins.h"
+
+void print_shell_prompt(){
+
+    char working_dir[WORKING_DIR_BUFFER_SIZE];
+    char* current_working_dir = getcwd(working_dir, WORKING_DIR_BUFFER_SIZE);
+    
+    uid_t user_id = getuid();
+    struct passwd *pwd;
+    pwd = getpwuid(user_id);
+
+    printf("%s:%s $ ", current_working_dir, pwd->pw_name);
+
+}
+
+
+void change_directory(char* new_dir){
+
+   if(new_dir == NULL){
+           return;
+   }
+
+   // Handle going to previous directory
+   if(strcmp(new_dir, "..")){
+        char working_dir[WORKING_DIR_BUFFER_SIZE];
+        char* current_working_dir = getcwd(working_dir, WORKING_DIR_BUFFER_SIZE);
+        
+        // Find index to end of absolute path
+        int index = 0;
+        while(current_working_dir[index] != '\0'){
+                index++;
+        }
+
+        index--;
+
+        while(current_working_dir[index] != '/'){
+            index--;
+        }
+
+        index--;
+
+        // Now we have the previous directory
+        
+        char new_directory[index + 1];
+
+        for(int i = 0; i < index; i++){
+           new_directory[i] = current_working_dir[i]; 
+        }
+        chdir(new_directory);
+   } else if (new_dir[0] == '/'){
+        chdir(new_dir);
+   } else if(new_dir[0] == '.' && new_dir[1] == '/'){
+        char working_dir[WORKING_DIR_BUFFER_SIZE];
+
+        char* current_working_dir = getcwd(working_dir, WORKING_DIR_BUFFER_SIZE);
+ 
+        size_t current_dir_len = strlen(current_working_dir);
+
+        size_t appended_len = strlen(new_dir);
+
+        size_t new_working_dir_size = current_dir_len + (appended_len - 2);
+
+        char new_directory[new_working_dir_size];
+        
+        int index = 0;
+        for(; index < current_dir_len - 1; index++){
+            new_directory[index] = current_working_dir[index];
+        }
+         
+        for(int new_dir_index = 2 ; index < new_working_dir_size - 1; index++, new_dir_index++){
+            new_directory[index] = new_dir[new_dir_index];
+        }
+
+        chdir(new_directory);
+   }
+
+   printf("\n");
+   print_shell_prompt();
+}
