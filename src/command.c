@@ -7,6 +7,7 @@
 #include "helpers.h"
 #include "shell_builtins.h"
 #include "command.h"
+#include "environment.h"
 
 char* program_path[] = {"/usr/local/sbin/", "/usr/local/bin/", "/usr/sbin/", "/usr/bin/", "/sbin/", "/bin/", NULL};
 
@@ -37,10 +38,16 @@ COMMAND command_from_buffer(char* buffer){
 
            // Append the rest of the arguments
            char* arg_p;
+
            while((arg_p = getword(buffer, &buffer_index)) != NULL){
+
+                if(is_environment_var(arg_p)){
+                    resolve_environment_var(&arg_p);
+                }
+
                 command_argument_append(command, arg_p);
            }
-
+            
            command_argument_append(command, NULL);         
         }
 

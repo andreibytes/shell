@@ -7,7 +7,7 @@ int main(int argc, char* argv[]){
         char* command_buffer = NULL;
         size_t command_size = 0;
         ssize_t chars_read;
-
+        
         while(1){
 
             print_shell_prompt();

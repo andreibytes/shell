@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS= -c -Wall -I ./includes -g
 EXECUTABLE = Shell
-OBJECTS = main.o shell_builtins.o command.o helpers.o
+OBJECTS = main.o shell_builtins.o command.o helpers.o environment.o
 SRC=./src
 HEADERS=./includes
 
@@ -22,6 +22,9 @@ command.o: $(SRC)/command.c $(HEADERS)/command.h
 	$(CC) $(CFLAGS) $< -o $@
 
 helpers.o: $(SRC)/helpers.c $(HEADERS)/helpers.h
+	$(CC) $(CFLAGS) $< -o $@
+
+environment.o: $(SRC)/environment.c $(HEADERS)/environment.h
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
