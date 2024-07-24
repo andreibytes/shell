@@ -106,3 +106,26 @@ char* getword(char* buffer, int* buffer_index){
     word_buf_p[word_size] ='\0';
     return word_buf_p;
  }
+
+
+
+
+FILE* open_file_for_redirect(IO_TYPE type, char* path_to_file){
+    FILE* p_file = NULL;
+
+    switch(type){
+        case READ:
+                p_file = fopen(path_to_file, "r");
+                break;
+        case WRITE:
+                p_file = fopen(path_to_file, "w");
+                break;
+        case APPEND:
+                p_file = fopen(path_to_file, "a");
+                break;
+        default:
+             break;
+    }
+
+    return p_file; 
+}

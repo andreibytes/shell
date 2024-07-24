@@ -21,6 +21,8 @@ typedef struct {
 
 void command_argument_append(Command* cmd , char* str);
 
+IO_TYPE is_io_redirect(Command* cmd);
+
 void command_execute(COMMAND cmd);
 
 COMMAND command_from_buffer(char* buffer){
@@ -29,6 +31,7 @@ COMMAND command_from_buffer(char* buffer){
         if(command != NULL){
            int buffer_index = 0;
            command->argv = NULL;
+
            // Get program name
            command->program = getword(buffer, &buffer_index);
             
@@ -105,6 +108,23 @@ void command_execute(COMMAND cmd){
                     printf("Program not found\n");
             };
     }    
+}
+
+IO_TYPE is_io_redirect(Command* cmd){
+
+    if(cmd->size_of_argv < 3){
+        return NOT;
+    }
+
+    if(strcmp(cmd->argv[1], ">") == 0){
+        return WRITE;
+    } else if(strcmp(cmd->argv[1], ">>") == 0) {
+        return APPEND;
+    } else if(strcmp(cmd->argv[1], "<") == 0) {
+        return READ;
+    }
+
+    return NOT;
 }
 
 
