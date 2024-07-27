@@ -21,7 +21,7 @@ typedef struct {
 
 void command_argument_append(Command* cmd , char* str);
 
-IO_TYPE is_io_redirect(Command* cmd);
+IO_TYPE is_io_redirect(Command* cmd, int* path_index);
 
 void command_execute(COMMAND cmd);
 
@@ -110,21 +110,29 @@ void command_execute(COMMAND cmd){
     }    
 }
 
-IO_TYPE is_io_redirect(Command* cmd){
+IO_TYPE is_io_redirect(Command* cmd, int* path_index){
+      int index = 0;
 
-    if(cmd->size_of_argv < 3){
-        return NOT;
-    }
+      while(cmd->argv[index][0] != '>' && cmd->argv[index][0] != '>' && strcmp(cmd->argv[index], ">>") == 0 && cmd->argv[index] != NULL){
+        index++;  
+      }
 
-    if(strcmp(cmd->argv[1], ">") == 0){
-        return WRITE;
-    } else if(strcmp(cmd->argv[1], ">>") == 0) {
-        return APPEND;
-    } else if(strcmp(cmd->argv[1], "<") == 0) {
-        return READ;
-    }
-
-    return NOT;
+      if(cmd->argv[index] != NULL && cmd->argv[index + 1] != NULL){
+            *path_index = index + 1;
+            if(cmd->argv[index][0] == '>'){
+                return WRITE;
+            } else if (cmd->argv[index][0] == '<'){
+                return READ;
+            } else if (strcmp(cmd->argv[index], ">>") == 0){
+                return APPEND;
+            } else {
+                   *path_index = -1;
+                    return NOT;
+           }
+      } else {
+          *path_index = -1;
+          return NOT;
+     }
 }
 
 
